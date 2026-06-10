@@ -157,46 +157,47 @@ function triggerFlowerBurst(onComplete) {
   const centerX   = window.innerWidth  / 2;
   const centerY   = window.innerHeight / 2;
 
+  // Bias distance toward center using sqrt so most flowers cluster near middle
+  function centeredDist(min, max) {
+    return min + Math.sqrt(Math.random()) * (max - min);
+  }
+
   const waves = [
-    { count: 20, sizeMin: 50,  sizeMax: 70,  distMin: 100,  distMax: 250, delay: 100,   dur: [0.8, 2.0] },
-    { count: 30, sizeMin: 60,  sizeMax: 110,  distMin: 150, distMax: 350, delay: 200, dur: [1.5, 2.0] },
-    { count: 50, sizeMin: 80,  sizeMax: 180, distMin: 100, distMax: 600, delay: 500, dur: [1.2, 2.0] },
+    { count: 15, sizeMin: 50,  sizeMax: 80,  distMin: 20,  distMax: 150, delay: 100, dur: [1.2, 2.0] },
+    { count: 20, sizeMin: 60,  sizeMax: 110, distMin: 30,  distMax: 200, delay: 300, dur: [1.5, 2.0] },
+    { count: 25, sizeMin: 80,  sizeMax: 160, distMin: 20,  distMax: 180, delay: 600, dur: [1.2, 2.0] },
   ];
 
   waves.forEach(wave => {
     setTimeout(() => {
       for (let i = 0; i < wave.count; i++) {
-        const angle    = (i / wave.count) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
-        const distance = wave.distMin + Math.random() * (wave.distMax - wave.distMin);
+        const angle    = (i / wave.count) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+        const distance = centeredDist(wave.distMin, wave.distMax);
         const size     = wave.sizeMin + Math.random() * (wave.sizeMax - wave.sizeMin);
-        const delay    = Math.random() * 0.2;
+        const delay    = Math.random() * 0.3;
         const duration = wave.dur[0] + Math.random() * (wave.dur[1] - wave.dur[0]);
-        const targetX  = centerX + Math.cos(angle) * distance;
-        const targetY  = centerY + Math.sin(angle) * distance;
+        const tx       = Math.cos(angle) * distance;
+        const ty       = Math.sin(angle) * distance;
         const rotate   = (Math.random() - 0.5) * 720;
-        const tx       = targetX - centerX;
-        const ty       = targetY - centerY;
 
         const el = document.createElement('div');
         el.classList.add('burst-flower');
         el.innerHTML  = randomFlowerImg(size);
         el.style.left = `${centerX}px`;
         el.style.top  = `${centerY}px`;
-
         container.appendChild(el);
 
-        const anim = el.animate([
+        el.animate([
           { transform: `translate(-50%, -50%) scale(0) rotate(0deg)`, opacity: 0 },
-          { transform: `translate(calc(${tx}px - 50%), calc(${ty}px - 50%)) scale(1.3) rotate(${rotate * 0.6}deg)`, opacity: 1, offset: 0.5 },
+          { transform: `translate(calc(${tx}px - 50%), calc(${ty}px - 50%)) scale(1.2) rotate(${rotate * 0.5}deg)`, opacity: 1, offset: 0.5 },
           { transform: `translate(calc(${tx}px - 50%), calc(${ty}px - 50%)) scale(1) rotate(${rotate}deg)`, opacity: 1 },
         ], {
           duration: duration * 1000,
-          delay:    delay    * 1000,
+          delay:    delay * 1000,
           fill:     'forwards',
           easing:   'cubic-bezier(0.34, 1.56, 0.64, 1)',
         });
 
-        // Fade out and remove burst flowers just before the overlay appears
         setTimeout(() => {
           el.animate([{ opacity: 1 }, { opacity: 0 }], {
             duration: 300,
@@ -211,38 +212,40 @@ function triggerFlowerBurst(onComplete) {
     overlay.innerHTML = '';
     overlay.classList.add('visible');
 
-    const count = 200;
+    const screenDiag = Math.sqrt(window.innerWidth ** 2 + window.innerHeight ** 2);
+    const count = 150;
 
     for (let i = 0; i < count; i++) {
-      const left  = -15 + Math.random() * 130;
-      const top   = -15 + Math.random() * 130;
-      const size  = Math.random() < 0.35
-                    ? 250 + Math.random() * 200
-                    : Math.random() < 0.5
-                    ? 120 + Math.random() * 100
-                    : 60  + Math.random() * 80;
+      // Bias overlay flowers toward center too using gaussian-ish distribution
+      const cx = 50 + (Math.random() + Math.random() - 1) * 60;
+      const cy = 50 + (Math.random() + Math.random() - 1) * 60;
+
+      const minSize = screenDiag * 0.07;
+      const maxSize = screenDiag * 0.28;
+      const size = Math.random() < 0.3
+        ? minSize * 1.8 + Math.random() * (maxSize - minSize * 1.8)
+        : minSize * 0.5 + Math.random() * minSize;
+
       const delay = Math.random() * 1.2;
       const dur   = 0.5 + Math.random() * 0.7;
       const rot   = (Math.random() - 0.5) * 80;
 
       const f = document.createElement('div');
       f.classList.add('overlay-flower');
-      f.style.left             = `${left}%`;
-      f.style.top              = `${top}%`;
-      f.style.width            = `${size}px`;
-      f.style.height           = `${size}px`;
+      f.style.left              = `${cx}%`;
+      f.style.top               = `${cy}%`;
+      f.style.width             = `${size}px`;
+      f.style.height            = `${size}px`;
       f.style.setProperty('--rot', `${rot}deg`);
       f.style.animationDuration = `${dur}s`;
-      f.style.animationDelay   = `${delay}s`;
-      f.innerHTML              = randomFlowerImg(size);
-
+      f.style.animationDelay    = `${delay}s`;
+      f.innerHTML               = randomFlowerImg(size);
       overlay.appendChild(f);
     }
   }, 700);
 
   setTimeout(() => {
     if (onComplete) onComplete();
-    // wait 2s then reverse
     setTimeout(reverseFlowersThenShowLetter, 60);
   }, 8000);
 }
