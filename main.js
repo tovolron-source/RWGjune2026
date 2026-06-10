@@ -158,8 +158,8 @@ function triggerFlowerBurst(onComplete) {
   const centerY   = window.innerHeight / 2;
 
   const waves = [
-    { count: 20, sizeMin: 20,  sizeMax: 50,  distMin: 80,  distMax: 200, delay: 0,   dur: [0.8, 1.2] },
-    { count: 30, sizeMin: 40,  sizeMax: 90,  distMin: 150, distMax: 350, delay: 200, dur: [1.0, 1.5] },
+    { count: 20, sizeMin: 50,  sizeMax: 70,  distMin: 100,  distMax: 250, delay: 100,   dur: [0.8, 2.0] },
+    { count: 30, sizeMin: 60,  sizeMax: 110,  distMin: 150, distMax: 350, delay: 200, dur: [1.5, 2.0] },
     { count: 50, sizeMin: 80,  sizeMax: 180, distMin: 100, distMax: 600, delay: 500, dur: [1.2, 2.0] },
   ];
 
@@ -202,7 +202,7 @@ function triggerFlowerBurst(onComplete) {
             duration: 300,
             fill: 'forwards',
           }).onfinish = () => el.remove();
-        }, 650);
+        }, 1000);
       }
     }, wave.delay);
   });
