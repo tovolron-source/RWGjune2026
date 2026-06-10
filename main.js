@@ -213,14 +213,14 @@ function triggerFlowerBurst(onComplete) {
     overlay.classList.add('visible');
 
     const screenDiag = Math.sqrt(window.innerWidth ** 2 + window.innerHeight ** 2);
-    const count = 150;
+    const count = 250;
 
     for (let i = 0; i < count; i++) {
       // Bias overlay flowers toward center too using gaussian-ish distribution
       const cx = 50 + (Math.random() + Math.random() - 1) * 60;
       const cy = 50 + (Math.random() + Math.random() - 1) * 60;
 
-      const minSize = screenDiag * 0.07;
+      const minSize = screenDiag * 0.09;
       const maxSize = screenDiag * 0.28;
       const size = Math.random() < 0.3
         ? minSize * 1.8 + Math.random() * (maxSize - minSize * 1.8)
