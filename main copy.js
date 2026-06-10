@@ -1,3 +1,5 @@
+
+
 const DEFAULT_LETTER = `My Dearest Love,
 
 Every moment with you feels like a beautiful dream I never want to wake from. Your smile brightens even my darkest days, and your laughter is the sweetest melody I could ever hear.
@@ -9,6 +11,7 @@ Thank you for being my greatest adventure, my safe harbor, and my home. I love y
 Forever yours,
 ❤️`;
 
+// ---- Floating Hearts ----
 const heartImgs = [
   'images/hearts/heart-1.png',
   'images/hearts/heart-2.png',
@@ -31,75 +34,97 @@ const flowerImages = [
   '/images/flowers/flower11.png',
   '/images/flowers/flower12.png',
 ];
-
-// ── Preload all flower images once ──
-const preloadedFlowers = flowerImages.map(src => {
-  const img = new Image();
-  img.src = src;
-  return src;
-});
-
-function randomFlowerImg(size) {
-  const src = preloadedFlowers[Math.floor(Math.random() * preloadedFlowers.length)];
-  return `<img src="${src}" width="${size}" height="${size}" style="display:block;will-change:transform;">`;
-}
-
 const giftCover = document.querySelector('.gift-cover');
 const giftBody  = document.querySelector('.gift-body');
 
+// Body subtly pulses in sync with the cover shake
 giftBody.classList.add('pulse');
 
 giftCover.addEventListener('click', () => {
+  // Stop shaking, play open animation on cover
   giftCover.classList.add('opening');
+
   giftCover.addEventListener('animationend', () => {
     giftCover.style.display = 'none';
+
+    // Body reacts to being opened
     giftBody.classList.remove('pulse');
     giftBody.classList.add('opened');
+
     giftBody.addEventListener('animationend', () => {
       onGiftOpened();
     }, { once: true });
+
   }, { once: true });
 });
 
-// ── Hearts ──
 function createHeart() {
   const heart = document.createElement('div');
   heart.classList.add('heart');
+
   const randomImg = heartImgs[Math.floor(Math.random() * heartImgs.length)];
   const img = document.createElement('img');
   img.src = randomImg;
+
   const size = 30 + Math.random() * 30;
   img.style.width = `${size}px`;
   img.style.height = `${size}px`;
+
   heart.appendChild(img);
   heart.style.left = `${Math.random() * 80 + 10}%`;
   heart.style.animationDuration = `${3 + Math.random() * 2}s`;
+
   document.getElementById('hearts-container').appendChild(heart);
   heart.addEventListener('animationend', () => heart.remove());
 }
 
-let heartInterval = setInterval(createHeart, 1500);
+setInterval(createHeart, 1500);
 
-// ── Background floating flowers ──
+function randomFlowerImg(size) {
+  const src = flowerImages[Math.floor(Math.random() * flowerImages.length)];
+  return `<img src="${src}" width="${size}" height="${size}" style="display:block;">`;
+}
+
+// ── Enhanced background floating flowers ──
 function createFlower() {
-  const size      = 30 + Math.random() * 60;
-  const startX    = Math.random() * 110 - 5;
-  const driftX    = (Math.random() - 0.5) * 200;
+  const size    = 30 + Math.random() * 60;
+  const startX  = Math.random() * 110 - 5;
+  const startY  = 100 + Math.random() * 20;
+  const driftX  = (Math.random() - 0.5) * 200;
   const rotateEnd = (Math.random() - 0.5) * 720;
-  const dur       = 6 + Math.random() * 6;
-  const delay     = Math.random() * 8;
+  const dur     = 6 + Math.random() * 6;
+  const delay   = Math.random() * 8;
 
   const wrapper = document.createElement('div');
   wrapper.classList.add('flower');
-  wrapper.style.cssText = `left:${startX}%;top:100%;width:${size}px;height:${size}px;opacity:${0.5 + Math.random() * 0.5};will-change:transform;`;
-  wrapper.innerHTML = randomFlowerImg(size);
+  wrapper.style.left    = `${startX}%`;
+  wrapper.style.top     = `${startY}%`;
+  wrapper.style.width   = `${size}px`;
+  wrapper.style.height  = `${size}px`;
+  wrapper.style.opacity = `${0.5 + Math.random() * 0.5}`;
+  wrapper.innerHTML     = randomFlowerImg(size);
+
   document.getElementById('flowers-container').appendChild(wrapper);
 
   wrapper.animate([
-    { transform: `translateY(0px) translateX(0px) rotate(0deg) scale(0.4)`, opacity: 0 },
-    { transform: `translateY(-30vh) translateX(${driftX * 0.3}px) rotate(${rotateEnd * 0.3}deg) scale(1)`, opacity: parseFloat(wrapper.style.opacity), offset: 0.15 },
-    { transform: `translateY(-70vh) translateX(${driftX * 0.7}px) rotate(${rotateEnd * 0.7}deg) scale(1.1)`, opacity: parseFloat(wrapper.style.opacity), offset: 0.7 },
-    { transform: `translateY(-110vh) translateX(${driftX}px) rotate(${rotateEnd}deg) scale(0.8)`, opacity: 0 },
+    {
+      transform: `translateY(0px) translateX(0px) rotate(0deg) scale(0.4)`,
+      opacity: 0,
+    },
+    {
+      transform: `translateY(-30vh) translateX(${driftX * 0.3}px) rotate(${rotateEnd * 0.3}deg) scale(1)`,
+      opacity: parseFloat(wrapper.style.opacity),
+      offset: 0.15,
+    },
+    {
+      transform: `translateY(-70vh) translateX(${driftX * 0.7}px) rotate(${rotateEnd * 0.7}deg) scale(1.1)`,
+      opacity: parseFloat(wrapper.style.opacity),
+      offset: 0.7,
+    },
+    {
+      transform: `translateY(-110vh) translateX(${driftX}px) rotate(${rotateEnd}deg) scale(0.8)`,
+      opacity: 0,
+    },
   ], {
     duration: dur * 1000,
     delay:    delay * 1000,
@@ -110,30 +135,37 @@ function createFlower() {
   setTimeout(() => wrapper.remove(), (dur + delay + 0.5) * 1000);
 }
 
-let flowerInterval = setInterval(createFlower, 600);
-for (let i = 0; i < 10; i++) createFlower();
+// Continuously spawn flowers
+setInterval(createFlower, 600);
+for (let i = 0; i < 10; i++) createFlower(); // initial batch
 
-// ── Flower burst ──
+
+function createFlowerImg(size) {
+  const src = flowerImages[Math.floor(Math.random() * flowerImages.length)];
+  return `<img src="${src}" width="${size}" height="${size}" style="display:block;">`;
+}
+
+function randomFlowerImg(size) {
+  const src = flowerImages[Math.floor(Math.random() * flowerImages.length)];
+  return `<img src="${src}" width="${size}" height="${size}" style="display:block;">`;
+}
+
+// ── Enhanced flower burst ──
 function triggerFlowerBurst(onComplete) {
-  // Stop background animations to free up GPU during burst
-  clearInterval(heartInterval);
-  clearInterval(flowerInterval);
-
   const container = document.getElementById('burst-container');
   const overlay   = document.getElementById('fullscreen-overlay');
   const centerX   = window.innerWidth  / 2;
   const centerY   = window.innerHeight / 2;
-  const isMobile  = window.innerWidth < 768;
 
+  // Bias distance toward center using sqrt so most flowers cluster near middle
   function centeredDist(min, max) {
     return min + Math.sqrt(Math.random()) * (max - min);
   }
 
-  // Reduce counts on mobile
   const waves = [
-    { count: isMobile ? 10 : 15, sizeMin: 50,  sizeMax: 80,  distMin: 20, distMax: 150, delay: 100, dur: [1.2, 2.0] },
-    { count: isMobile ? 14 : 20, sizeMin: 60,  sizeMax: 110, distMin: 30, distMax: 200, delay: 300, dur: [1.5, 2.0] },
-    { count: isMobile ? 18 : 25, sizeMin: 80,  sizeMax: 160, distMin: 20, distMax: 180, delay: 600, dur: [1.2, 2.0] },
+    { count: 15, sizeMin: 50,  sizeMax: 80,  distMin: 20,  distMax: 150, delay: 100, dur: [1.2, 2.0] },
+    { count: 20, sizeMin: 60,  sizeMax: 110, distMin: 30,  distMax: 200, delay: 300, dur: [1.5, 2.0] },
+    { count: 25, sizeMin: 80,  sizeMax: 160, distMin: 20,  distMax: 180, delay: 600, dur: [1.2, 2.0] },
   ];
 
   waves.forEach(wave => {
@@ -150,8 +182,9 @@ function triggerFlowerBurst(onComplete) {
 
         const el = document.createElement('div');
         el.classList.add('burst-flower');
-        el.style.cssText = `left:${centerX}px;top:${centerY}px;will-change:transform;`;
-        el.innerHTML = randomFlowerImg(size);
+        el.innerHTML  = randomFlowerImg(size);
+        el.style.left = `${centerX}px`;
+        el.style.top  = `${centerY}px`;
         container.appendChild(el);
 
         el.animate([
@@ -179,35 +212,19 @@ function triggerFlowerBurst(onComplete) {
     overlay.innerHTML = '';
     overlay.classList.add('visible');
 
-    const W = window.innerWidth;
-    const H = window.innerHeight;
-    const screenDiag = Math.sqrt(W ** 2 + H ** 2);
-
-    // Fewer flowers on mobile — large ones cover more area anyway
-    const count = isMobile ? 80 : 150;
-
-    // Build all flowers in one fragment — one DOM insertion
-    const fragment = document.createDocumentFragment();
+    const screenDiag = Math.sqrt(window.innerWidth ** 2 + window.innerHeight ** 2);
+    const count = 250;
 
     for (let i = 0; i < count; i++) {
-      let cx, cy;
-      if (i < Math.floor(count * 0.4)) {
-        // Center cluster
-        cx = 50 + (Math.random() + Math.random() - 1) * 60;
-        cy = 50 + (Math.random() + Math.random() - 1) * 60;
-      } else {
-        // Full scatter including bleed past edges
-        cx = -10 + Math.random() * 120;
-        cy = -10 + Math.random() * 120;
-      }
+      // Bias overlay flowers toward center too using gaussian-ish distribution
+      const cx = 50 + (Math.random() + Math.random() - 1) * 60;
+      const cy = 50 + (Math.random() + Math.random() - 1) * 60;
 
-      // Large flowers for edge coverage, small ones for center texture
-      const isEdgeFiller = i >= Math.floor(count * 0.6);
-      const size = isEdgeFiller
-        ? screenDiag * (0.3 + Math.random() * 0.25)
-        : Math.random() < 0.4
-          ? screenDiag * (0.18 + Math.random() * 0.15)
-          : screenDiag * (0.07 + Math.random() * 0.08);
+      const minSize = screenDiag * 0.09;
+      const maxSize = screenDiag * 0.28;
+      const size = Math.random() < 0.3
+        ? minSize * 1.8 + Math.random() * (maxSize - minSize * 1.8)
+        : minSize * 0.5 + Math.random() * minSize;
 
       const delay = Math.random() * 1.2;
       const dur   = 0.5 + Math.random() * 0.7;
@@ -215,13 +232,16 @@ function triggerFlowerBurst(onComplete) {
 
       const f = document.createElement('div');
       f.classList.add('overlay-flower');
-      f.style.cssText = `left:${cx}%;top:${cy}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;will-change:transform;`;
+      f.style.left              = `${cx}%`;
+      f.style.top               = `${cy}%`;
+      f.style.width             = `${size}px`;
+      f.style.height            = `${size}px`;
       f.style.setProperty('--rot', `${rot}deg`);
-      f.innerHTML = randomFlowerImg(size);
-      fragment.appendChild(f);
+      f.style.animationDuration = `${dur}s`;
+      f.style.animationDelay    = `${delay}s`;
+      f.innerHTML               = randomFlowerImg(size);
+      overlay.appendChild(f);
     }
-
-    overlay.appendChild(fragment); // single reflow
   }, 700);
 
   setTimeout(() => {
@@ -232,7 +252,8 @@ function triggerFlowerBurst(onComplete) {
 
 function onGiftOpened() {
   triggerFlowerBurst(() => {
-    console.log('opened');
+    // Runs after 5.5s — show your message, next page, etc.
+    console.log('?');
   });
 }
 
@@ -245,16 +266,16 @@ function toggleEdit() {
   const btn        = document.getElementById('edit-btn');
 
   if (!isEditing) {
-    textareaEl.value         = textEl.innerText;
-    textEl.style.display     = 'none';
-    textareaEl.style.display = 'block';
-    btn.textContent          = 'Save';
+    textareaEl.value   = textEl.innerText;
+    textEl.style.display      = 'none';
+    textareaEl.style.display  = 'block';
+    btn.textContent    = 'Save';
     btn.classList.add('saving');
   } else {
-    textEl.innerText         = textareaEl.value;
-    textEl.style.display     = 'block';
-    textareaEl.style.display = 'none';
-    btn.textContent          = 'Edit Letter';
+    textEl.innerText          = textareaEl.value;
+    textEl.style.display      = 'block';
+    textareaEl.style.display  = 'none';
+    btn.textContent    = 'Edit Letter';
     btn.classList.remove('saving');
   }
 
@@ -264,32 +285,38 @@ function toggleEdit() {
 // ── Spawn background flowers inside letter overlay ──
 function spawnLetterBgFlowers() {
   const container = document.getElementById('letter-bg-flowers');
-  const fragment  = document.createDocumentFragment();
   for (let i = 0; i < 12; i++) {
     const size  = 60 + Math.random() * 100;
     const delay = Math.random() * 4;
     const dur   = 8 + Math.random() * 4;
+
     const f = document.createElement('div');
     f.classList.add('bg-flower');
-    f.style.cssText = `left:${Math.random() * 100}%;top:${Math.random() * 100}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${delay}s;`;
-    f.innerHTML = randomFlowerImg(size);
-    fragment.appendChild(f);
+    f.style.left            = `${Math.random() * 100}%`;
+    f.style.top             = `${Math.random() * 100}%`;
+    f.style.width           = `${size}px`;
+    f.style.height          = `${size}px`;
+    f.style.animationDuration = `${dur}s`;
+    f.style.animationDelay  = `${delay}s`;
+    f.innerHTML             = randomFlowerImg(size);
+
+    container.appendChild(f);
   }
-  container.appendChild(fragment);
 }
 
 // ── Show love letter ──
 function showLoveLetter() {
   spawnLetterBgFlowers();
-  document.getElementById('letter-overlay').classList.add('visible');
+  const overlay = document.getElementById('letter-overlay');
+  overlay.classList.add('visible');
 }
 
 // ── Reverse disappear then show letter ──
 function reverseFlowersThenShowLetter() {
-  const overlay   = document.getElementById('fullscreen-overlay');
-  const flowerEls = Array.from(overlay.querySelectorAll('.overlay-flower'));
-  const total     = flowerEls.length;
-  const staggerDelay = 8;
+  const overlay      = document.getElementById('fullscreen-overlay');
+  const flowerEls    = Array.from(overlay.querySelectorAll('.overlay-flower'));
+  const total        = flowerEls.length;
+  const staggerDelay = 8; // much faster — was 30ms
 
   [...flowerEls].reverse().forEach((el, i) => {
     setTimeout(() => {
@@ -297,7 +324,7 @@ function reverseFlowersThenShowLetter() {
         { transform: getComputedStyle(el).transform, opacity: 1 },
         { transform: `${getComputedStyle(el).transform} scale(0)`, opacity: 0 },
       ], {
-        duration: 250,
+        duration: 250,  // shorter pop-out — was 400ms
         easing: 'cubic-bezier(0.55, 0, 1, 0.45)',
         fill: 'forwards',
       });
