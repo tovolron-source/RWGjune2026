@@ -10,26 +10,26 @@ Forever yours,
 ❤️`;
 
 const heartImgs = [
-  'images/hearts/heart-1.png',
-  'images/hearts/heart-2.png',
-  'images/hearts/heart-3.png',
-  'images/hearts/heart-4.png',
-  'images/hearts/heart-5.png',
+  './images/hearts/heart-1.png',
+  './images/hearts/heart-2.png',
+  './images/hearts/heart-3.png',
+  './images/hearts/heart-4.png',
+  './images/hearts/heart-5.png',
 ];
 
 const flowerImages = [
-  '/images/flowers/flower1.png',
-  '/images/flowers/flower2.png',
-  '/images/flowers/flower3.png',
-  '/images/flowers/flower4.png',
-  '/images/flowers/flower5.png',
-  '/images/flowers/flower6.png',
-  '/images/flowers/flower7.png',
-  '/images/flowers/flower8.png',
-  '/images/flowers/flower9.png',
-  '/images/flowers/flower10.png',
-  '/images/flowers/flower11.png',
-  '/images/flowers/flower12.png',
+  './images/flowers/flower1.png',
+  './images/flowers/flower2.png',
+  './images/flowers/flower3.png',
+  './images/flowers/flower4.png',
+  './images/flowers/flower5.png',
+  './images/flowers/flower6.png',
+  './images/flowers/flower7.png',
+  './images/flowers/flower8.png',
+  './images/flowers/flower9.png',
+  './images/flowers/flower10.png',
+  './images/flowers/flower11.png',
+  './images/flowers/flower12.png',
 ];
 
 // ── Preload all flower images once ──
